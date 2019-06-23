@@ -497,11 +497,6 @@ if (CLIENT) then
 
 		local activeAtt = item:GetData("activeAtt", {})
 
-		for k, v in pairs(activeAtt) do
-			print(k)
-			print(v)
-		end
-
 		if !table.IsEmpty(activeAtt) then
 			for i = 1, #activeAtt do
 				surface.SetDrawColor(255, 255, 110, 100)

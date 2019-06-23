@@ -2,9 +2,20 @@ PLUGIN.name = "CW 2.0 Compatibility"
 PLUGIN.author = "Hoooldini"
 PLUGIN.description = "Adds compatibility for Customizable Weaponry 2.0 to Helix."
 
+-- [[ INCLUDES ]] --
+
 ix.util.Include("sh_cwmeta.lua")
 
+--[[ FUNCTIONS ]]--
+
 if (SERVER) then
+
+	--[[
+		FUNCTION: PLUGIN:KeyPress( client, key )
+		DESCRIPTION: This detects whether or not the client is switching firemodes. If the firemode
+		is set to safe, the weapon is considered lowered in the script.
+	]]
+
 	function PLUGIN:KeyPress( client, key )
 		if CustomizableWeaponry then 
 			local wep = client:GetActiveWeapon()
@@ -20,6 +31,12 @@ if (SERVER) then
 			end
 		end
 	end
+
+	--[[
+		FUNCTION: PLUGIN:PlayerSwitchWeapon( client, _, wep )
+		DESCRIPTION: When the player switches to a weapon using the CW 2.0 base, it will set the
+		weapon to be lowered if safe, or raised if anything else.
+	]]
 
 	function PLUGIN:PlayerSwitchWeapon( client, _, wep )
 		if CustomizableWeaponry then 
@@ -38,6 +55,13 @@ if (SERVER) then
 			end
 		end
 	end
+
+	--[[
+		FUNCTION: PLUGIN:CanTransferItem( item, oldInv, newInv )
+		DESCRIPTION: This is used to make sure that only attachments can be put into weapon inventories.
+		Then is also makes sure that there are no categories taking the same slot as any other attached attachments,
+		and makes sure it is also possible to attach the attachment before allowing to be transfered.
+	]]
 
 	function PLUGIN:CanTransferItem( item, oldInv, newInv )
 		if (newInv.vars and newInv.vars.isGun) then

@@ -23,10 +23,6 @@ if (SERVER) then
 			
 			if trLo and trHi and trLo.Hit and !trHi.Hit then
 				local dist = math.abs(trHi.HitPos.z - ply:GetPos().z)
-				--[[print("JumpPower:"..ply:GetJumpPower())
-				print("Distance: "..dist)
-				ply:SetPos(trHi.HitPos)
-				print("SetVelocity: "..(50 + dist * 3))]]-- Apparently it works
 				ply:SetVelocity(Vector(0, 0, (50 + dist * 3)))
 			end
 		end

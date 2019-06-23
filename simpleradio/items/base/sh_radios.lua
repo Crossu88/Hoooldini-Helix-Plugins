@@ -3,25 +3,20 @@ ITEM.model = "models/gibs/shield_scanner_gib1.mdl"
 ITEM.width = 1
 ITEM.height = 1
 ITEM.category = "Communication"
+ITEM.isRadio = true
 ITEM.defaultFreq = "main" -- The default frequency the player will be set to
 ITEM.freqList = { -- Radios can only support one main channel, and two additional channels.
 	"main",
 	"command",
 	"support"
 }
-ITEM.isRadio = true
 
-if (CLIENT) then
-	function ITEM:PaintOver(item, w, h)
-		if item:GetData("equip", false) then
-			surface.SetDrawColor(110, 255, 110, 100)
-		else
-			surface.SetDrawColor(255, 110, 110, 100)
-		end
+-- [[ ITEM FUNCTIONS & HOOKS ]] --
 
-		surface.DrawRect(w - 14, h - 14, 8, 8)
-	end
-end
+--[[
+	FUNCTION: Toggle
+	DESCRIPTION: Toggles power of the radio and sets up the RadioInfo of the player.
+]]--
 
 ITEM.functions.toggle = { -- sorry, for name order.
 	name = "Toggle Power",
@@ -70,3 +65,24 @@ ITEM.functions.toggle = { -- sorry, for name order.
 		end
 	end
 }
+
+-- [[ FUNCTIONS ]] --
+
+--[[
+	FUNCTION: ITEM:PaintOver(item, w, h)
+	DESCRIPTION: Paints a square on the bottom right of the inventory icon.
+	Code is identical to ZeMysticalTaco's radio plugin.
+]]
+
+if (CLIENT) then
+	function ITEM:PaintOver(item, w, h)
+		if item:GetData("equip", false) then
+			surface.SetDrawColor(110, 255, 110, 100)
+		else
+			surface.SetDrawColor(255, 110, 110, 100)
+		end
+
+		surface.DrawRect(w - 14, h - 14, 8, 8)
+	end
+end
+

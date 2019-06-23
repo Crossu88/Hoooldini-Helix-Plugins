@@ -2,6 +2,8 @@ PLUGIN.name = "Attribute System"
 PLUGIN.author = "Hoooldini"
 PLUGIN.description = "Implementation of an attribute system for roleplay."
 
+-- [[ CONFIGURATION OPTIONS ]] --
+
 ix.config.Add("strengthMeleeMultiplier", 0.3, "The strength multiplier for melee damage.", nil, {
 	data = {min = 0, max = 1.0, decimals = 1},
 	category = "Attributes"
@@ -47,7 +49,16 @@ ix.config.Add("staminaCrouchRegeneration", 2, "How much stamina to regain per ti
 	category = "Attributes"
 })
 
+-- [[ COMMANDS ]] --
+
+--[[
+	COMMAND: /RollStat
+	DESCRIPTION: RollStat is designed to allow for a client to roll one of their attributes in a 1-100 roll. Attributes must be
+	their three letter abbreviation as designated in their file name.
+]]--
+
 ix.command.Add("RollStat", {
+	syntax = "<stat>",
 	description = "Rolls and adds a bonus for the stat provided",
 	arguments = {
 		ix.type.text
@@ -66,7 +77,16 @@ ix.command.Add("RollStat", {
 	end
 })
 
+-- [[ FUNCTIONS ]] --
+
 if (SERVER) then
+
+	--[[
+		FUNCTION: PLUGIN:PostPlayerLoadout(client)
+		DESCRIPTION: Code taken from the stamina plugin that was taken for use here.
+		Sets up the stamina and run speed of the character and contains hooks for stamina.
+	]]--
+
 	function PLUGIN:PostPlayerLoadout(client)
 		local uniqueID = "ixStam"..client:SteamID()
 		local offset = 0
@@ -126,6 +146,12 @@ if (SERVER) then
 		end)
 	end
 
+	--[[
+		FUNCTION: PLUGIN:CharacterPreSave(character)
+		DESCRIPTION: Code taken from the stamina plugin that was taken for use here.
+		Saves stamina of the character, or the agility depending on how you look at it.
+	]]--
+
 	function PLUGIN:CharacterPreSave(character)
 		local client = character:GetPlayer()
 
@@ -133,6 +159,12 @@ if (SERVER) then
 			character:SetData("stamina", client:GetLocalVar("agi", 0))
 		end
 	end
+
+	--[[
+		FUNCTION: PLUGIN:PlayerLoadedCharacter(client, character)
+		DESCRIPTION: Code taken from the stamina plugin that was taken for use here.
+		Sets stamina of the character, or the agility depending on how you look at it.
+	]]--
 
 	function PLUGIN:PlayerLoadedCharacter(client, character)
 		timer.Simple(0.25, function()
@@ -142,12 +174,23 @@ if (SERVER) then
 
 	local playerMeta = FindMetaTable("Player")
 
+	--[[
+		FUNCTION: PLUGIN:RestoreStamina(amount)
+		DESCRIPTION: Code taken from the stamina plugin that was taken for use here.
+		Restores the stamina of the character, probably.
+	]]--
+
 	function playerMeta:RestoreStamina(amount)
 		local current = self:GetLocalVar("agi", 0)
 		local value = math.Clamp(current + amount, 0, 100)
 
 		self:SetLocalVar("agi", value)
 	end
+
+	--[[
+		FUNCTION: PLUGIN:GetPlayerPunchDamage(client, damage, context)
+		DESCRIPTION: Code taken from the strength plugin. Changes the damage value of the fists.
+	]]--
 
 	function PLUGIN:GetPlayerPunchDamage(client, damage, context)
 		if (client:GetCharacter()) then
@@ -156,15 +199,11 @@ if (SERVER) then
 		end
 	end
 
-	--[[function PLUGIN:GetThrowForce(client, physobj, force)
-		local maxWeight = (ix.config.Get("maxHoldWeight", 100) + client:GetCharacter():GetAttribute("str", 0) * ix.config.Get("strengthMultiplier", 1))
-
-		if (client:GetCharacter()) then
-
-			print(ix.config.Get("throwForce", 732) + (maxWeight / physobj:GetMass()) * 500) 
-			return (ix.config.Get("throwForce", 732) + (maxWeight / physobj:GetMass()) * 500)
-		end
-	end]]--
+	--[[
+		FUNCTION: PLUGIN:CanPlayerHoldObject(client, entity)
+		DESCRIPTION: Code taken from the strength plugin. Changes how much a player can
+		hold in their hand.
+	]]--
 
 	function PLUGIN:CanPlayerHoldObject(client, entity)
 		if (client:GetCharacter()) then
@@ -174,6 +213,12 @@ if (SERVER) then
 			 	(physics:GetMass() <= (ix.config.Get("maxHoldWeight", 100) + client:GetCharacter():GetAttribute("str", 0) * ix.config.Get("strengthMultiplier", 1)))
 		end
 	end
+
+	--[[
+		FUNCTION: PLUGIN:PlayerThrowPunch(client, trace)
+		DESCRIPTION: Code taken from the strength plugin. Currently defunct as I try to find a non
+		abusable way of gaining stats.
+	]]--
 
 	function PLUGIN:PlayerThrowPunch(client, trace)
 		if (client:GetCharacter() and IsValid(trace.Entity) and trace.Entity:IsPlayer()) then

@@ -7,7 +7,7 @@ ITEM.description = "A deployable."
 ITEM.category = "Deployables"
 ITEM.class = "ent_jack_turret_rifle"
 
-ITEM.functions.use = { -- sorry, for name order.
+ITEM.functions.use = {
 	name = "Deploy",
 	tip = "useTip",
 	icon = "icon16/add.png",

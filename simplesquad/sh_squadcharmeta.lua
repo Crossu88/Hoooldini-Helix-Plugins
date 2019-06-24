@@ -1,5 +1,12 @@
 local CHARMETA = ix.meta.character or {}
 
+-- [[ FUNCTIONS ]] --
+
+--[[ 
+	FUNCTION: CHARMETA:GetSquad()
+	DESCRIPTION: Returns the character's current squad or nil
+]]--
+
 function CHARMETA:GetSquad()
 	local squadInfo = self:GetData("squadInfo")
 	local squad = nil
@@ -11,9 +18,19 @@ function CHARMETA:GetSquad()
 	return squad
 end
 
+--[[ 
+	FUNCTION:CHARMETA:ClearSquadInfo()
+	DESCRIPTION: Clears a character's squad info.
+]]--
+
 function CHARMETA:ClearSquadInfo()
 	self:SetData("squadInfo", nil)
 end
+
+--[[ 
+	FUNCTION: CHARMETA:SetSquadColor(color)
+	DESCRIPTION: Sets the squad color of a character, which appears to other players.
+]]--
 
 function CHARMETA:SetSquadColor(color)
 	local squadInfo = self:GetData("squadInfo", nil)

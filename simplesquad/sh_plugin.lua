@@ -2,13 +2,24 @@ PLUGIN.name = "Simple Squad"
 PLUGIN.author = "Hoooldini"
 PLUGIN.description = "A simple squad system for military themed servers."
 
+-- [[ INCLUDES ]] --
+
 ix.util.Include("sh_squadnetworking.lua")
 ix.util.Include("sh_squadcore.lua")
 ix.util.Include("sh_squadcharmeta.lua")
 ix.util.Include("sh_squadcommands.lua")
 ix.util.Include("cl_squadderma.lua")
 
+-- [[ FUNCTIONS ]] --
+
 if CLIENT then
+
+	--[[
+		FUNCTION: PLUGIN:HUDPaint()
+		DESCRIPTION: Draws a symbol over other character's head depending
+		on whether or not they are squad leader.
+	]]--
+
 	function PLUGIN:HUDPaint()
 		for k, v in pairs(squad) do
 			if (v and v.member and v.member != LocalPlayer() and IsValid(v.member)) then
@@ -38,11 +49,21 @@ if CLIENT then
 	end
 end
 
+--[[
+	FUNCTION: PLUGIN:OnCharacterDisconnect(client, character)
+	DESCRIPTION: Forces a player to leave their squad upon disconnecting.
+]]--
+
 function PLUGIN:OnCharacterDisconnect(client, character)
 	if character:GetSquad() then
 		ix.squadsystem.LeaveSquad(client)
 	end
 end
+
+--[[
+	FUNCTION: PLUGIN:PlayerLoadedCharacter(client, character, lastChar)
+	DESCRIPTION: Forces a player to leave their squad when switching characters.
+]]--
 
 function PLUGIN:PlayerLoadedCharacter(client, character, lastChar)
 	if (lastChar and lastChar:GetSquad()) then

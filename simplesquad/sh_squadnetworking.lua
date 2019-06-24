@@ -1,3 +1,11 @@
+--[[ NETWORKING ]] --
+
+--[[
+	NOTE: I know that this isn't the most effective way to network. There's a lot
+	of unnecessary Network Strings that could have been simplified down. I plan on returning
+	here to redo and redocument the networking.
+]]
+
 if SERVER then
 	util.AddNetworkString("CreateSquad")
 	util.AddNetworkString("JoinSquad")

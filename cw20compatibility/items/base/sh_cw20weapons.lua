@@ -1,4 +1,3 @@
-
 ITEM.name = "Weapon"
 ITEM.description = "A Weapon."
 ITEM.category = "Weapons"

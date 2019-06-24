@@ -1,5 +1,14 @@
+-- [[ GLOBAL VARIABLES ]] --
+
 ix.squadsystem = ix.squadsystem or {}
 ix.squadsystem.squads = ix.squadsystem.squads or {}
+
+-- [[ FUNCTIONS ]] --
+
+--[[ 
+	FUNCTION: ix.squadsystem.SyncSquad(squad)
+	DESCRIPTION: Syncs all members of the provided squad.
+]]--
 
 function ix.squadsystem.SyncSquad(squad)
 	local squadTable = ix.squadsystem.squads[squad]
@@ -15,11 +24,24 @@ function ix.squadsystem.SyncSquad(squad)
 	end
 end
 
+--[[
+	FUNCTION: ix.squadsystem.GiveEmptySquad(client)
+	DESCRIPTION: Gives the client an empty squad. This is used
+	to clear the version of the squad the client has so that
+	they don't draw squad markers over anyone's head.
+]]--
+
 function ix.squadsystem.GiveEmptySquad(client)
 	net.Start("SquadSync")
 		net.WriteTable({})
 	net.Send(client)
 end
+
+--[[
+	FUNCTION: ix.squadsystem.SetSquadLeader(client)
+	DESCRIPTION: Sets the designated user to be the squad
+	leader of their squad.
+]]--
 
 function ix.squadsystem.SetSquadLeader(client)
 	local char = client:GetCharacter()
@@ -44,6 +66,11 @@ function ix.squadsystem.SetSquadLeader(client)
 	ix.squadsystem.SyncSquad(squad)
 end
 
+--[[
+	FUNCTION: ix.squadsystem.CreateSquad(client, squad)
+	DESCRIPTION: Creates a squad with the designated name.
+]]--
+
 function ix.squadsystem.CreateSquad(client, squad)
 	if !(ix.squadsystem.squads[squad]) then -- Prevents the creation of the squad if it already exists.
 		ix.squadsystem.InitializeSquadInfo(client, squad)
@@ -62,6 +89,11 @@ function ix.squadsystem.CreateSquad(client, squad)
 		client:Notify("Squad already exists.")
 	end
 end
+
+--[[
+	FUNCTION: ix.squadsystem.JoinSquad(client, squad)
+	DESCRIPTION: Makes the designated client join the designated squad.
+]]--
 
 function ix.squadsystem.JoinSquad(client, squad) -- Replacing client with ply here to use client later.
 	if (ix.squadsystem.squads[squad]) then -- Can only join a squad if it exists.
@@ -84,6 +116,12 @@ function ix.squadsystem.JoinSquad(client, squad) -- Replacing client with ply he
 	end
 end
 
+--[[
+	FUNCTION: ix.squadsystem.InitializeSquadInfo(client, group)
+	DESCRIPTION: Initializes a client's squad info and sets their squad
+	to the provided squad.
+]]--
+
 function ix.squadsystem.InitializeSquadInfo(client, group) -- Squad is referred to as group here so that I can use the variable "squad" later in the function.
 	local char = client:GetCharacter()
 	local groupInfo = { -- Decided to keep it consistent here too by using group instead of squad.
@@ -97,6 +135,12 @@ function ix.squadsystem.InitializeSquadInfo(client, group) -- Squad is referred 
 
 	char:SetData("squadInfo", groupInfo)
 end
+
+--[[
+	FUNCTION: ix.squadsystem.LeaveSquad(client, character)
+	DESCRIPTION: Makes the provided user leave their current
+	squad.
+]]--
 
 function ix.squadsystem.LeaveSquad(client, character)
 	character = character or client:GetCharacter()

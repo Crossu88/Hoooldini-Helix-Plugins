@@ -61,7 +61,7 @@ local teamTable = {
 	Infantry = FACTION_INFANTRY,
 	Specialist = FACTION_INFANTRY,
 	Fleet = FACTION_FLEET,
-	Fighter = FACTION_FLEET,
+	Aerospace = FACTION_FLEET,
 	Medical = FACTION_FLEET,
 } 
 

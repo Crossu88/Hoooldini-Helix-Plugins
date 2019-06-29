@@ -102,28 +102,30 @@ end
 
 function PLUGIN:PlayerModelChanged( client, model )
 	local char = client:GetCharacter()
-	local tab = char:GetData( "bodygrouptable", {} )
-	local ixgroups = char:GetData( "groups", {} )
 
-	if ( !table.IsEmpty(tab) and tab[model] ) then
+	if char and char.SetData then
+		local tab = char:GetData( "bodygrouptable", {} )
+		local ixgroups = char:GetData( "groups", {} )
 
-		for k, v in pairs(tab[model]) do
+		if ( !table.IsEmpty(tab) and tab[model] ) then
 
-			if ( k != "skin" ) then
+			for k, v in pairs(tab[model]) do
 
-				client:SetBodygroup( k, v )
-				ixgroups[k] = v
+				if ( k != "skin" ) then
 
-			else
+					client:SetBodygroup( k, v )
+					ixgroups[k] = v
 
-				char:SetData( "skin", v )
-				client:SetSkin( v )
+				else
+
+					char:SetData( "skin", v )
+					client:SetSkin( v )
+
+				end
 
 			end
 
+			char:SetData( "groups", ixgroups )
 		end
-
-		char:SetData( "groups", ixgroups )
-
 	end	
 end

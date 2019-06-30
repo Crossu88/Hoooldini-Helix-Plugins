@@ -63,7 +63,7 @@ function ix.squadsystem.SetSquadLeader(client)
 		end
 	end
 
-	ix.squadsystem.SyncSquad(squad)
+	ix.squadsystem.SyncSquad(squadName)
 end
 
 --[[

@@ -25,7 +25,7 @@ if CLIENT then
 			if (v and v.member and v.member != LocalPlayer() and IsValid(v.member)) then
 				local headbone = v.member:LookupBone("ValveBiped.Bip01_Head1")
 				local headpos = v.member:GetBonePosition(headbone)
-				local sqrdist = LocalPlayer()GetPos():DistToSqr( v.member:GetPos() )
+				local sqrdist = LocalPlayer():GetPos():DistToSqr( v.member:GetPos() )
 				local maxdist = 524.934
 				local alpha = 255
 

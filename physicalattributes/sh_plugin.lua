@@ -4,6 +4,10 @@ PLUGIN.description = "Implementation of an attribute system for roleplay."
 
 -- [[ CONFIGURATION OPTIONS ]] --
 
+ix.config.Add("enableStamina", true, "Whether or not stamina drain is enabled.", nil, {
+	category = "Stamina"
+})
+
 ix.config.Add("strengthMeleeMultiplier", 0.3, "The strength multiplier for melee damage.", nil, {
 	data = {min = 0, max = 1.0, decimals = 1},
 	category = "Attributes"
@@ -31,22 +35,22 @@ ix.config.Add("agilityMultiplier", 1, "Mutiplies the speed that agility adds to 
 
 ix.config.Add("staminaMax", 0, "Max amount of stamina players will have.", nil, {
 	data = {min = -30, max = 30, decimals = 2},
-	category = "Attributes"
+	category = "Stamina"
 })
 
 ix.config.Add("staminaDrain", 1, "How much stamina to drain per tick (every quarter second). This is calculated before attribute reduction.", nil, {
 	data = {min = 0, max = 10, decimals = 2},
-	category = "Attributes"
+	category = "Stamina"
 })
 
 ix.config.Add("staminaRegeneration", 1.75, "How much stamina to regain per tick (every quarter second).", nil, {
 	data = {min = 0, max = 10, decimals = 2},
-	category = "Attributes"
+	category = "Stamina"
 })
 
 ix.config.Add("staminaCrouchRegeneration", 2, "How much stamina to regain per tick (every quarter second) while crouching.", nil, {
 	data = {min = 0, max = 10, decimals = 2},
-	category = "Attributes"
+	category = "Stamina"
 })
 
 -- [[ COMMANDS ]] --
@@ -113,7 +117,7 @@ if (SERVER) then
 			local walkSpeed = ix.config.Get("walkSpeed")
 			local maxAttributes = ix.config.Get("maxAttributes", 30)
 
-			if (client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() >= (walkSpeed * walkSpeed)) then
+			if (client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() >= (walkSpeed * walkSpeed) and ix.config.Get("enableStamina", false)) then
 				-- characters could have attribute values greater than max if the config was changed
 				offset = -ix.config.Get("staminaDrain", 1) + math.min(ix.config.Get("staminaMax", 0), maxAttributes) / maxAttributes
 			else

@@ -2,17 +2,6 @@ PLUGIN.name = "Simple Radio"
 PLUGIN.author = "Hoooldini"
 PLUGIN.description = "Simple radios for Helix."
 
--- [[ NETWORKING ]] --
-
--- Used for playing a sound to the client upon receiving a radio message. Makes it so that only the client can hear the sound.
-if SERVER then
-	util.AddNetworkString( "radioReceive" )
-else
-	net.Receive( "radioReceive", function( len, pl )
-		surface.PlaySound( "npc/metropolice/vo/off" .. math.random(1, 3) .. ".wav" )
-	end )
-end
-
 -- [[ GLOBAL VARIABLES ]] --
 
 -- Optional color table for giving frequencies different colors.
@@ -37,25 +26,25 @@ local RADIO_CHATCOLOR = Color(100, 255, 50)
 
 ix.chat.Register("radio", { -- Sets up and registers the radio chat.
 	format = "[%s] %s: \"%s\"",
-	OnGetColor = function(self, speaker, text)
-		return RADIO_CHATCOLOR
-	end,
-	OnCanHear = function(self, speaker, listener)
-		local listenerRadio = listener:GetCharacter():GetData("RadioInfo")
-		local speakerRadio = speaker:GetCharacter():GetData("RadioInfo")
+	CanHear = function(self, speaker, listener)
 		local canHear = false
-
-		if (listenerRadio and table.HasValue(listenerRadio.freqList, speakerRadio.lastFreq)) then -- If the listener has the frequency, allow them to hear the transmission.
+        local speakerRadio = speaker:GetCharacter():GetData("RadioInfo")
+        local listenerRadio = listener:GetCharacter():GetData("RadioInfo")
+        
+		if (listenerRadio and table.HasValue(listenerRadio.freqList, speakerRadio.lastFreq)) then -- If the listener has the frequency, allow them to hear the transmission. 
 			canHear = true
-			net.Start("radioReceive")
-			net.Send(listener)
 		end
-
+    		
 		return canHear
 	end,
 	CanSay = function(self, speaker, text)
 		local speakerRadio = speaker:GetCharacter():GetData("RadioInfo")
 		local canSpeak = false
+		
+		local character = speaker:GetCharacter()
+		local radioInfo = character:GetData("RadioInfo")
+		
+		self.lastFreq = radioInfo.lastFreq
 
 		if (speakerRadio) then -- If the speaker has RadioInfo set up, they have a radio and can speak.
 			canSpeak = true
@@ -66,10 +55,12 @@ ix.chat.Register("radio", { -- Sets up and registers the radio chat.
 	OnChatAdd = function(self, speaker, text, anonymous, info)
 		local character = speaker:GetCharacter()
 		local name = character:GetName()
-		local radioInfo = character:GetData("RadioInfo")
-		local channel = string.upper(radioInfo.lastFreq)
+		
+		if (speaker != LocalPlayer()) then
+	        surface.PlaySound( "npc/metropolice/vo/off" .. math.random(1, 3) .. ".wav" )
+	    end
 
-		chat.AddText((colorTable[radioInfo.lastFreq] or self.color), string.format(self.format, channel, name, text))
+		chat.AddText((colorTable[info.channel] or self.color), string.format(self.format, string.upper(info.channel), name, text))
 	end
 })
 
@@ -101,7 +92,7 @@ ix.command.Add("r", {
 			radioInfo.lastFreq = radioInfo.freqList[1]
 			char:SetData("RadioInfo", radioInfo) 
 
-			ix.chat.Send(client, "radio", text, false, nil, nil)
+			ix.chat.Send(client, "radio", text, false, nil, { channel = radioInfo.lastFreq })
 
 			client:EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", math.random(50, 60), math.random(80, 120))
 		end
@@ -127,7 +118,7 @@ ix.command.Add("r1", {
 			radioInfo.lastFreq = radioInfo.freqList[2]
 			char:SetData("RadioInfo", radioInfo) 
 
-			ix.chat.Send(client, "radio", text, false, nil, nil)
+			ix.chat.Send(client, "radio", text, false, nil, { channel = radioInfo.lastFreq })
 
 			client:EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", math.random(50, 60), math.random(80, 120))
 		end
@@ -153,7 +144,7 @@ ix.command.Add("r2", {
 			radioInfo.lastFreq = radioInfo.freqList[3]
 			char:SetData("RadioInfo", radioInfo) 
 
-			ix.chat.Send(client, "radio", text, false, nil, nil)
+			ix.chat.Send(client, "radio", text, false, nil, { channel = radioInfo.lastFreq })
 
 			client:EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", math.random(50, 60), math.random(80, 120))
 		end

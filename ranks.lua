@@ -134,7 +134,7 @@ function PLUGIN:SetRank(character, newrank)
 
 			character:SetName(name)
 
-			ix.util.Notify("Your rank has been set to "..v.fullRank..'.', character:GetPlayer())
+			character:GetPlayer():Notify("Your rank has been set to "..v.fullRank..'.', character:GetPlayer())
 			break
 		end
 	end
@@ -170,7 +170,7 @@ function PLUGIN:TransferDivision(character, newdivision)
 
 		character:SetData("rankinfo", rankinfo)
 
-		ix.util.Notify("You have been transfered to "..newdivision..'.', character:GetPlayer())
+		character:GetPlayer():Notify("You have been transfered to "..newdivision..'.', character:GetPlayer())
 	end
 
 	return true
@@ -205,7 +205,7 @@ function PLUGIN:Promote(character)
 
 	character:SetData("rankinfo", newrankinfo)
 
-	ix.util.Notify("Congratulations, you have been promoted to "..newfullRank..'.', character:GetPlayer())
+	character:GetPlayer():Notify("Congratulations, you have been promoted to "..newfullRank..'.', character:GetPlayer())
 	return true
 end
 
@@ -232,7 +232,7 @@ function PLUGIN:Demote(character)
 
 	character:SetData("rankinfo", newrankinfo)
 
-	ix.util.Notify("You have been demoted to "..newfullRank..'.', character:GetPlayer()) // Notifies the target player.
+	character:GetPlayer():Notify("You have been demoted to "..newfullRank..'.', character:GetPlayer()) // Notifies the target player.
 
 	return true
 end
@@ -246,7 +246,7 @@ ix.command.Add("CharSetDivision", {
 	},
 	OnRun = function(self, client, target, text)
 		if !PLUGIN:TransferDivision(target, text) then
-			ix.util.Notify("Can not transfer target to division.")
+			client:Notify("Can not transfer target to division.")
 		end
 	end
 })
@@ -260,7 +260,7 @@ ix.command.Add("CharSetRank", {
 	},
 	OnRun = function(self, client, target, text)
 		if !PLUGIN:SetRank(target, text) then
-			ix.util.Notify("Can not set target's rank to the one specified.")
+			client:Notify("Can not set target's rank to the one specified.")
 		end
 	end
 })
@@ -273,7 +273,7 @@ ix.command.Add("CharDemote", {
 	},
 	OnRun = function(self, client, target)
 		if !PLUGIN:Demote(target) then
-			ix.util.Notify("Can not demote the target character.")
+			client:Notify("Can not demote the target character.")
 		end
 	end
 })
@@ -286,7 +286,7 @@ ix.command.Add("CharPromote", {
 	},
 	OnRun = function(self, client, target)
 		if !PLUGIN:Promote(target) then
-			ix.util.Notify("Can not promote the target character.")
+			client:Notify("Can not promote the target character.")
 		end
 	end
 })

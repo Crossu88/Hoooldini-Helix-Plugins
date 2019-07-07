@@ -57,6 +57,8 @@ function ITEM:OnTransferred( oldInv, newInv )
 			end	
 		end
 
-		hostItem:SetData("activeAtt", activeAtt)
+		if hostItem then
+			hostItem:SetData("activeAtt", activeAtt)
+		end
 	end
 end

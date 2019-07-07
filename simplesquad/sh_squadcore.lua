@@ -143,7 +143,13 @@ end
 ]]--
 
 function ix.squadsystem.LeaveSquad(client, character)
-	character = character or client:GetCharacter()
+	local isKick = false
+
+	if character then
+		isKick = true
+	else
+		character = client:GetCharacter()
+	end
 
 	if character and character:GetSquad() then
 		local squadName = character:GetSquad()
@@ -160,7 +166,11 @@ function ix.squadsystem.LeaveSquad(client, character)
 
 			ix.squadsystem.SyncSquad(squadName)
 
-			client:Notify("You have left "..squadName..'.')
+			if isKick then
+				client:Notify("You have been removed from "..squadName..'.')
+			else
+				client:Notify("You have left "..squadName..'.')
+			end
 		end
 	else
 		client:Notify("You are not a part of a squad.")

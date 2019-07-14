@@ -6,9 +6,11 @@ PLUGIN.description = "Adds compatibility for Customizable Weaponry 2.0 to Helix.
 
 ix.util.Include("sh_cwmeta.lua")
 
---[[ FUNCTIONS ]]--
-
 if (SERVER) then
+
+	util.AddNetworkString("attSound")
+
+	--[[ FUNCTIONS ]]--
 
 	--[[
 		FUNCTION: PLUGIN:KeyPress( client, key )
@@ -43,9 +45,9 @@ if (SERVER) then
 			if wep.Base == "cw_base" then
 				timer.Simple( 0.05, function() 
 					if wep.FireMode == "safe" then
-						client:SetWepRaised(false, weapon)
+						client:SetWepRaised( false, weapon )
 					else
-						client:SetWepRaised(true, weapon)
+						client:SetWepRaised( true, weapon )
 					end
 				end )
 
@@ -66,12 +68,42 @@ if (SERVER) then
 	function PLUGIN:CanTransferItem( item, oldInv, newInv )
 		if (newInv.vars and newInv.vars.isGun) then
 			if item.attClass then
+				local owner
 				local items = newInv:GetItems()
 				local hostItem = newInv.vars.item
 				local weapon = hostItem:GetData("weapon", nil)
+				local activeAtts = hostItem:GetData("activeAtt", {})
+				local returnval = true
 
-				if !(weapon and weapon:canAttachSpecificAttachment(item.attClass)) then
-					return false
+				if (isfunction(newInv.GetOwner)) then
+					owner = newInv:GetOwner()
+				end
+
+				if not weapon then
+					owner:Give( hostItem.class, true )
+					weapon = owner:GetWeapon( hostItem.class )
+
+					if table.IsEmpty( activeAtts ) then
+						for k, v in pairs( activeAtts ) do
+							weapon:attachSpecificAttachment( hostItem.class )
+						end
+					end
+
+					local canAttach = weapon:canAttachSpecificAttachment( item.attClass )
+
+					if !canAttach then 
+						returnval = false
+					else
+						net.Start("attSound")
+							net.WriteString("cw/attach.wav")
+						net.Send(owner)
+					end
+					
+					owner:StripWeapon( hostItem.class )
+				else
+					local canAttach = weapon:canAttachSpecificAttachment( item.attClass )
+
+					if !canAttach then returnval = false end
 				end
 
 				for _, v in pairs(items) do
@@ -81,16 +113,40 @@ if (SERVER) then
 						if (!itemTable) then
 							client:NotifyLocalized("tellAdmin", "wid!xt")
 
-							return false
+							returnval = false
 						else
 							if ( itemTable.attCategory == item.attCategory ) then
-								return false
+								returnval = false
 							end
 						end
 					end
 				end
-				return true
+				return returnval
 			end
 		end
+		
+		if (oldInv.vars and oldInv.vars.isGun) then
+			local owner
+			local hostItem = oldInv.vars.item
+			local weapon = hostItem:GetData("weapon", nil)
+
+			if (isfunction(oldInv.GetOwner)) then
+				owner = newInv:GetOwner()
+			end
+
+			if weapon == nil then
+				net.Start("attSound")
+					net.WriteString("cw/detach.wav")
+				net.Send(owner)
+			end
+
+			return true
+		end
 	end
+
+else
+	net.Receive("attSound", function( len, pl )
+		local soundstr = net.ReadString()
+		surface.PlaySound( soundstr )
+	end)
 end

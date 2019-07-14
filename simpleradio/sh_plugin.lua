@@ -60,7 +60,7 @@ ix.chat.Register("radio", { -- Sets up and registers the radio chat.
 	        surface.PlaySound( "npc/metropolice/vo/off" .. math.random(1, 3) .. ".wav" )
 	    end
 
-		chat.AddText((colorTable[info.channel] or RADIO_CHATCOLOR), string.format(self.format, string.upper(info.channel), name, text))
+		chat.AddText((colorTable[info.channel] or self.color), string.format(self.format, string.upper(info.channel), name, text))
 	end
 })
 

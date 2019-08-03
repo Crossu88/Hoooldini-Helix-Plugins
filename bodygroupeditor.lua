@@ -2,6 +2,12 @@ PLUGIN.name = "Body Group Editor"
 PLUGIN.author = "Hoooldini"
 PLUGIN.description = "Adds integration to for the bodygroup editor addon into helix and saves bodygroups by model."
 
+-- [[ CONFIGURATION OPTIONS ]] --
+
+ix.config.Add("enableFlag", true, "Whether or not the b flag is required for use.", nil, {
+	category = "Body Group Editor"
+})
+
 -- [[ FLAGS ]] --
 
 ix.flag.Add("b", "Access to the bodygroup editor.")
@@ -16,7 +22,7 @@ ix.flag.Add("b", "Access to the bodygroup editor.")
 function PLUGIN:CanUseBodyGroupEditor( client )
 	char = client:GetCharacter()
 
-	if !char:HasFlags("b") then return false end
+	if ( ix.config.Get("enableFlag") and !char:HasFlags("b") ) then return false end
 end
 
 --[[

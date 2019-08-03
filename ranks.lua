@@ -14,7 +14,13 @@ local rankTable = {
 		{ fullRank = "Sergeant", rank = "Sgt." },
 		{ fullRank = "Staff Sergeant", rank = "SSgt." },
 		{ fullRank = "Sergeant First Class", rank = "Sfc." },
-		{ fullRank = "Master Sergeant", rank = "MSgt." }
+		{ fullRank = "Master Sergeant", rank = "MSgt." },
+		{ fullRank = "Second Lieutenant", rank = "2Lt." },
+		{ fullRank = "First Lieutenant", rank = "1Lt." },
+		{ fullRank = "Captain", rank = "Cpt." },
+		{ fullRank = "Major", rank = "Maj." },
+		{ fullRank = "Lieutenant Colonel", rank = "LtCol." },
+		{ fullRank = "Colonel", rank = "Col." }
 	},
 	Specialist = {
 		{ fullRank = "Recruit", rank = "Rct." },
@@ -25,44 +31,60 @@ local rankTable = {
 		{ fullRank = "Master Specialist", rank = "MSpc." },
 		{ fullRank = "Technical Sergeant", rank = "TSgt." }
 	},
+	Engineering = {
+		{ fullRank = "Recruit", rank = "Rct." },
+		{ fullRank = "Private", rank = "Pvt." },
+		{ fullRank = "Private First Class", rank = "Pfc." },
+		{ fullRank = "Specialist", rank = "Spc." },
+		{ fullRank = "Senior Specialist", rank = "SSpc." },
+		{ fullRank = "Master Specialist", rank = "MSpc." },
+		{ fullRank = "Technical Sergeant", rank = "TSgt." }
+	},
 	Fleet = {
-		{ fullRank = "Cadet", rank = "Cdt." },
-		{ fullRank = "Crewman", rank = "Cmn."},
-		{ fullRank = "Crewman First Class", rank = "Cfc."},
+		{ fullRank = "Cadet", rank = "CDT." },
+		{ fullRank = "Crewman", rank = "CM."},
+		{ fullRank = "Crewman First Class", rank = "CFC."},
 		{ fullRank = "Petty Officer Third Class", rank = "PO3."},
 		{ fullRank = "Petty Officer Second Class", rank = "PO2."},
 		{ fullRank = "Petty Officer First Class", rank = "PO1."},
 		{ fullRank = "Chief Petty Officer", rank = "CPO."},
 		{ fullRank = "Senior Chief Petty Officer", rank = "SCPO."},
-		{ fullRank = "Master Chief Petty Officer", rank = "MCPO."}
+		{ fullRank = "Master Chief Petty Officer", rank = "MCPO."},
+		{ fullRank = "Second Lieutenant", rank = "2LT." },
+		{ fullRank = "First Lieutenant", rank = "1LT." },
+		{ fullRank = "Captain", rank = "CPT." },
+		{ fullRank = "Major", rank = "MAJ." },
+		{ fullRank = "Lieutenant Colonel", rank = "LTC." },
+		{ fullRank = "Colonel", rank = "COL." }
 	},
 	Aerospace = {
-		{ fullRank = "Cadet", rank = "Cdt."},
-		{ fullRank = "Crewman", rank = "Cmn."},
-		{ fullRank = "Crewman First Class", rank = "Cfc."},
-		{ fullRank = "Warrant Officer One", rank = "WO1."},
-		{ fullRank = "Warrant Officer Two", rank = "WO2."},
-		{ fullRank = "Chief Warrant Officer", rank = "CWO."},
-		{ fullRank = "Ensign", rank = "Ens."}
+		{ fullRank = "Cadet", rank = "CDT."},
+		{ fullRank = "Junior Flight Officer", rank = "JFO."},
+		{ fullRank = "Flight Officer Third Class", rank = "FO3."},
+		{ fullRank = "Flight Officer Second Class", rank = "FO2."},
+		{ fullRank = "Flight Officer First Class", rank = "FO1."},
+		{ fullRank = "Chief Flight Officer", rank = "CFO."},
+		{ fullRank = "Wing Commander", rank = "WCM."}
 
 	},
 	Medical = {
-		{ fullRank = "Hospitalman Recruit", rank = "HRc."},
-		{ fullRank = "Hospitalman Apprentice", rank = "HAp."},
-		{ fullRank = "Hospitalman", rank = "Hmn."},
+		{ fullRank = "Hospitalman Recruit", rank = "HR."},
+		{ fullRank = "Hospitalman Apprentice", rank = "HA."},
+		{ fullRank = "Hospitalman", rank = "HM."},
 		{ fullRank = "Hospital Corpsman Third Class", rank = "HC3."},
 		{ fullRank = "Hospital Corpsman Second Class", rank = "HC2."},
 		{ fullRank = "Hospital Corpsman First Class", rank = "HC1."},
 		{ fullRank = "Chief Hospital Corpsman", rank = "CHC."}
-	}
+	},
 }
 
 local teamTable = {
 	Infantry = FACTION_INFANTRY,
 	Specialist = FACTION_INFANTRY,
+	Engineering = FACTION_ENGINEERS,
 	Fleet = FACTION_FLEET,
 	Aerospace = FACTION_FLEET,
-	Medical = FACTION_FLEET,
+	Medical = FACTION_MEDICAL
 } 
 
 function PLUGIN:SetupRank(client, character)
@@ -121,8 +143,6 @@ function PLUGIN:SetRank(character, newrank)
 	local rankfound = false
 
 	for k, v in pairs(rankTable[division]) do
-		print("key: "..k.." value: "..v.rank)
-
 		if v.fullRank == newrank or v.rank == newrank then
 			rankinfo.paygrade = k
 			rankinfo.rank = v.rank
@@ -162,6 +182,14 @@ function PLUGIN:TransferDivision(character, newdivision)
 
 		if teamTable[newdivision] != character:GetPlayer():Team() then
 			character:SetFaction(teamTable[newdivision])
+
+			local faction = teamTable[newdivision]
+
+			if (target:SetWhitelisted(faction.index, true)) then
+				for _, v in ipairs(player.GetAll()) do
+					v:NotifyLocalized("whitelist", client:GetName(), target:GetName(), L(faction.name, v))
+				end
+			end
 		end
 
 		name = string.gsub(name, "%w+%.", rankinfo.rank) // Replaces the old rank with the new one.

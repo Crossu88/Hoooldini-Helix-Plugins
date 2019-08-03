@@ -13,28 +13,6 @@ if (SERVER) then
 	--[[ FUNCTIONS ]]--
 
 	--[[
-		FUNCTION: PLUGIN:KeyPress( client, key )
-		DESCRIPTION: This detects whether or not the client is switching firemodes. If the firemode
-		is set to safe, the weapon is considered lowered in the script.
-	]]
-
-	function PLUGIN:KeyPress( client, key )
-		if CustomizableWeaponry then 
-			local wep = client:GetActiveWeapon()
-
-			if (client:KeyDown(IN_USE) and client:KeyDown(IN_RELOAD)) and wep.Base == "cw_base" then
-				timer.Simple( 0.05, function() 
-					if wep.FireMode == "safe" then
-						client:SetWepRaised(false, weapon)
-					else
-						client:SetWepRaised(true, weapon)
-					end
-				end )
-			end
-		end
-	end
-
-	--[[
 		FUNCTION: PLUGIN:PlayerSwitchWeapon( client, _, wep )
 		DESCRIPTION: When the player switches to a weapon using the CW 2.0 base, it will set the
 		weapon to be lowered if safe, or raised if anything else.
@@ -42,13 +20,10 @@ if (SERVER) then
 
 	function PLUGIN:PlayerSwitchWeapon( client, _, wep )
 		if CustomizableWeaponry then 
-			if wep.Base == "cw_base" then
+			if wep.Base == "cw_base" or wep.Base =="cw_kk_ins2_base" then
 				timer.Simple( 0.05, function() 
-					if wep.FireMode == "safe" then
-						client:SetWepRaised( false, weapon )
-					else
-						client:SetWepRaised( true, weapon )
-					end
+					client:SetWepRaised( true, weapon )
+					wep.IsAlwaysRaised = true
 				end )
 
 				timer.Simple( 0.3, function()

@@ -32,7 +32,6 @@ ITEM.functions.manage = {
         local squad = ix.squadsystem.squads[squadName] or nil
         if (squad) and (squad[1].member == item.player) then
             net.Start("ManageSquad")
-            --net.WriteTable(ix.squadsystem.squads[squad])
             net.Send(item.player)
         else
             item.player:Notify("You are not a squad leader.")

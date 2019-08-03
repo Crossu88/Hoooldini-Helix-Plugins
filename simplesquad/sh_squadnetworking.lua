@@ -17,6 +17,8 @@ if SERVER then
 	net.Receive( "CreateSquad", function( len, pl )
 		local tab = net.ReadTable()
 
+		print("CreateSquad")
+
 		ix.squadsystem.CreateSquad(tab[1], tab[2])
 	end )
 

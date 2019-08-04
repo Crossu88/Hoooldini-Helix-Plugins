@@ -163,11 +163,18 @@ function PLUGIN:SetRank(character, newrank)
 end
 
 function PLUGIN:TransferDivision(character, newdivision)
+	for k, _ in pairs(teamTable) do
+		if ix.util.StringMatches(k, newdivision) then
+			newdivision = k
+		end
+	end
+
 	if !rankTable[newdivision] then return false end // If the division does not exist, return false.
 	
 	local name = character:GetName()
 	local rankinfo = character:GetData("rankinfo")
 	local paygrade = rankinfo.paygrade
+	local ply = character:GetPlayer()
 
 	if rankinfo.division != newdivision then
 		rankinfo.division = newdivision
@@ -184,13 +191,9 @@ function PLUGIN:TransferDivision(character, newdivision)
 			character:SetFaction(teamTable[newdivision])
 
 			local faction = teamTable[newdivision]
-
-			if (target:SetWhitelisted(faction.index, true)) then
-				for _, v in ipairs(player.GetAll()) do
-					v:NotifyLocalized("whitelist", client:GetName(), target:GetName(), L(faction.name, v))
-				end
-			end
 		end
+
+		ply:SetWhitelisted(teamTable[newdivision], true)
 
 		name = string.gsub(name, "%w+%.", rankinfo.rank) // Replaces the old rank with the new one.
 
@@ -208,6 +211,7 @@ function PLUGIN:Promote(character)
 	local name = character:GetName()
 	local rankinfo = character:GetData("rankinfo")
 	local newpaygrade = rankinfo.paygrade + 1 // Paygrade acts as key for the rank table.
+	local ply = character:GetPlayer()
 
 	if (newpaygrade) > #rankTable[rankinfo.division] then return false end // If no rank exists above the character's current rank, return false.
 
@@ -218,10 +222,9 @@ function PLUGIN:Promote(character)
 
 	character:SetName(name)
 
-	if teamTable[rankinfo.division] != character:GetPlayer():Team() then // Moves recruits into the infantry faction and whitelists them to both infantry and fleet.
+	if teamTable[rankinfo.division] != ply:Team() then // Moves recruits into the infantry faction and whitelists them to both infantry and fleet.
 		character:SetFaction(teamTable[rankinfo.division])
-		character:SetWhitelisted(FACTION_INFANTRY, true)
-		character:SetWhitelisted(FACTION_FLEET, true)
+		ply:SetWhitelisted(teamTable[rankinfo.division], true)
 	end
 
 	local newrankinfo = {
@@ -233,7 +236,7 @@ function PLUGIN:Promote(character)
 
 	character:SetData("rankinfo", newrankinfo)
 
-	character:GetPlayer():Notify("Congratulations, you have been promoted to "..newfullRank..'.', character:GetPlayer())
+	ply:Notify("Congratulations, you have been promoted to "..newfullRank..'.', ply)
 	return true
 end
 
@@ -327,6 +330,14 @@ ix.command.Add("CharResetRank", {
 		ix.type.character
 	},
 	OnRun = function(self, client, target)
+		PLUGIN:SetupRank(client, target)
+	end
+})
+
+ix.command.Add("Whitelist", {
+	description = "Sets whitelist.",
+	superAdminOnly = true,
+	OnRun = function(self, client)
 		PLUGIN:SetupRank(client, target)
 	end
 })

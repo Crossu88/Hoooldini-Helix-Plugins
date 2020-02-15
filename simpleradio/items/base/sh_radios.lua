@@ -44,7 +44,8 @@ ITEM.functions.toggle = { -- sorry, for name order.
 		return false
 	end,
 	OnCanRun = function(item) -- Everything under here just makes sure we aren't requipping two radios.
-		local items = item.player:GetCharacter():GetInventory():GetItems()
+		local client = item.player
+		local items = client:GetCharacter():GetInventory():GetItems()
 
 		for _, v in pairs(items) do
 			if (v.id != item.id) then

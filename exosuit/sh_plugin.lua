@@ -3,10 +3,9 @@ PLUGIN.author = "Hoooldini"
 PLUGIN.description = "Adds and exosuit with special abilities."
 
 --[[
-	WARNING: The original developer of the exosuit script was a horrible person and
-	coded to prevent themselves from picking the bugs crawling under their skin while
-	on methamphetamines. I tried my best to clean it up, but I could only do so much. 
-	If you wish to keep your sanity, turn back. This is your last chance.
+	WARNING: I am not the original developer of this script. I've just adapted it for Helix. As a result, my knowledge of the original
+	script is limited, and I don't have much understanding of the original code. I've done my best to format it, but I can't say that
+	the code is going to be easy to understand.
 	-Hoooldini
 ]]--
 

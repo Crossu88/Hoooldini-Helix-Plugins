@@ -138,7 +138,7 @@ do
 			main:DockMargin(0, 0, 4, 0)
 			main:Dock(FILL)
 
-			local bginfoHeight = ( ScrH() * 0.2 )
+			local bginfoHeight = ( ScrH() * 0.2 ) 
 
 			local bginfo = main:Add("Panel")
 			bginfo:SetTall( bginfoHeight )
@@ -165,7 +165,7 @@ do
 			local bgdropdown = bgpanel:Add("DComboBox")
 			bgdropdown:Dock(FILL)
 
-			for k, v in SortedPairsByMemberValue(ix.backgrounds.list, "name") do
+			for k, v in SortedPairsByMemberValue(ix.backgrounds.list, "name") do 
 				bgdropdown:AddChoice( L(v.name), v )
 			end
 

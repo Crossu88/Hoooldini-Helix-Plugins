@@ -45,18 +45,19 @@ ITEM.functions.toggle = { -- sorry, for name order.
 	end,
 	OnCanRun = function(item) -- Everything under here just makes sure we aren't requipping two radios.
 		local items = item.player:GetCharacter():GetInventory():GetItems()
+		local char = item.player:GetCharacter()
 
 		for _, v in pairs(items) do
 			if (v.id != item.id) then
 				local itemTable = ix.item.instances[v.id]
 
 				if (!itemTable) then
-					client:NotifyLocalized("tellAdmin", "wid!xt")
+					char:NotifyLocalized("tellAdmin", "wid!xt")
 
 					return false
 				else
 					if (itemTable.isRadio and itemTable:GetData("equip")) then
-						client:Notify("You can not equip more than one radio at a time.")
+						char:Notify("You can not equip more than one radio at a time.")
 
 						return false
 					end

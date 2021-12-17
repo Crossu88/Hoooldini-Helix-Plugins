@@ -92,3 +92,67 @@ ITEM.functions.setcolor = {
         return false
     end
 }
+
+ITEM.functions.seticon = {
+    name = "Set Icon",
+    icon = "icon16/arrow_refresh.png",
+    isMulti = true,
+    multiOptions = function(item, ply)
+        options = {
+            {
+                name = "Team Leader",
+                data = {
+                    icon = "tl"
+                }
+            },
+            {
+                name = "Marksman",
+                data = {
+                    icon = "dmr"
+                }
+            },
+            {
+                name = "Squad Automatic Weapon",
+                data = {
+                    icon = "saw"
+                }
+            },
+            {
+                name = "Engineer",
+                data = {
+                    icon = "eng"
+                }
+            },
+            {
+                name = "Medic",
+                data = {
+                    icon = "med"
+                }
+            },
+            {
+                name = "None",
+                data = {
+                    icon = "none"
+                }
+            }
+        }
+
+        return options
+    end,
+    OnRun = function(item, data)
+        local client = item.player
+        local char = client:GetCharacter()
+        local squadinfo = char:GetData("squadInfo")
+        local icon = squadinfo["icon"]
+
+        if ( icon ) and ( icon != "lead" ) then
+           char:SetSquadIcon(data.icon)
+        elseif ( icon ) and ( icon == "lead") then
+            client:Notify("You can not change your icon, you are a squad leader.")
+        else
+            client:Notify("You can not change your icon.")
+        end
+
+        return false
+    end
+} 

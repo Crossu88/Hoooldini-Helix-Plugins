@@ -51,13 +51,40 @@ function ix.squadsystem.SetSquadLeader(client)
 	if (squadName and squad) then
 		for k, v in pairs(squad) do
 			if v.member == client then
-				local v1, v2 = squad[1], squad[k]
+				local v1 = { -- player information that will be inserted into the squad table.
+					member = v.member,
+					color = v.member:GetCharacter():GetData("squadInfo").color,
+					icon = "none"
+				}
+
+				local v2 = { -- player information that will be inserted into the squad table.
+					member = client,
+					color = client:GetCharacter():GetData("squadInfo").color,
+					icon = "lead"
+				}
 
 				ix.squadsystem.squads[squadName][1] = v2
 				ix.squadsystem.squads[squadName][k] = v1
 
-				client:Notify("You have been promoted to squad leader.")
+				local char1 = v.member:GetCharacter()
+				local groupInfo1 = {
+					squad = squadName,
+					color = v.member:GetCharacter():GetData("squadInfo").color,
+					icon = "none"
+				}
 
+				char1:SetData("squadInfo", groupInfo1)
+
+				local char2 = client:GetCharacter()
+				local groupInfo2 = {
+					squad = squadName,
+					color = client:GetCharacter():GetData("squadInfo").color,
+					icon = "lead"
+				}
+
+				char2:SetData("squadInfo", groupInfo2)
+
+				client:Notify("You have been promoted to squad leader.")
 				break
 			end
 		end
@@ -73,11 +100,12 @@ end
 
 function ix.squadsystem.CreateSquad(client, squad)
 	if !(ix.squadsystem.squads[squad]) then -- Prevents the creation of the squad if it already exists.
-		ix.squadsystem.InitializeSquadInfo(client, squad)
+		ix.squadsystem.InitializeSquadInfoLeader(client, squad)
 
 		local tab = { -- player information that will be inserted into the squad table.
 			member = client,
-			color = client:GetCharacter():GetData("squadInfo").color
+			color = client:GetCharacter():GetData("squadInfo").color,
+			icon = "lead"
 		}
 
 		ix.squadsystem.squads[squad] = {tab}
@@ -101,7 +129,8 @@ function ix.squadsystem.JoinSquad(client, squad) -- Replacing client with ply he
 
 		local tab = { -- player information that will be inserted into the squad table.
 			member = client,
-			color = client:GetCharacter():GetData("squadInfo").color
+			color = client:GetCharacter():GetData("squadInfo").color,
+			icon = client:GetCharacter():GetData("squadInfo").icon
 		}
 
 		if ix.squadsystem.squads[squad] then
@@ -126,7 +155,23 @@ function ix.squadsystem.InitializeSquadInfo(client, group) -- Squad is referred 
 	local char = client:GetCharacter()
 	local groupInfo = { -- Decided to keep it consistent here too by using group instead of squad.
 		squad = group,
-		color = Color(255, 255, 255) -- Default color is white.
+		color = Color(255, 255, 255), -- Default color is white.
+		icon = "none" -- Default chevron icon
+	}
+
+	if char:GetSquad() then
+		ix.squadsystem.LeaveSquad(client)
+	end
+
+	char:SetData("squadInfo", groupInfo)
+end
+
+function ix.squadsystem.InitializeSquadInfoLeader(client, group) -- Squad is referred to as group here so that I can use the variable "squad" later in the function.
+	local char = client:GetCharacter()
+	local groupInfo = { -- Decided to keep it consistent here too by using group instead of squad.
+		squad = group,
+		color = Color(255, 255, 255), -- Default color is white.
+		icon = "lead" -- Default chevron icon
 	}
 
 	if char:GetSquad() then

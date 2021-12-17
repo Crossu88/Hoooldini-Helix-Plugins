@@ -10,6 +10,15 @@ ix.util.Include("sh_squadcommands.lua")
 ix.util.Include("cl_squadderma.lua")
 
 if CLIENT then
+	local matTable = {
+	none = Material( "vgui/squadsystem/squadicon.vmt" ),
+	tl = Material( "vgui/squadsystem/squadicontl.vmt" ),
+	lead = Material( "vgui/squadsystem/squadiconleader.vmt" ),
+	saw = Material( "vgui/squadsystem/squadiconsaw.vmt" ),
+	eng = Material( "vgui/squadsystem/squadiconeng.vmt" ),
+	med = Material( "vgui/squadsystem/squadiconmed.vmt" ),
+	dmr = Material( "vgui/squadsystem/squadicondmr.vmt" )
+	}
 
 	--[[ NETWORKING ]] --
 
@@ -62,9 +71,13 @@ if CLIENT then
 				local screenpos = headpos:ToScreen()
 
 				if k == 1 then
-					draw.SimpleTextOutlined( "★", "Trebuchet24", screenpos.x, screenpos.y, v.color, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 5, Color( 0, 0, 0, alpha ) )
+					surface.SetDrawColor( v.color )
+					surface.SetMaterial( matTable["lead"] ) -- If you use Material, cache it!
+					surface.DrawTexturedRect( screenpos.x - 16, screenpos.y, 32, 32 )
 				else
-					draw.SimpleTextOutlined( "⮟", "Trebuchet24", screenpos.x, screenpos.y, v.color, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 5, Color( 0, 0, 0, alpha ) )
+					surface.SetDrawColor( v.color )
+					surface.SetMaterial( matTable[v.icon] ) -- If you use Material, cache it!
+					surface.DrawTexturedRect( screenpos.x - 16, screenpos.y, 32, 32 )
 				end
 			end
 		end
@@ -135,3 +148,97 @@ function PLUGIN:PlayerLoadedCharacter(client, character, lastChar)
 		ix.squadsystem.LeaveSquad(client, lastChar)
 	end
 end
+
+--[[
+	CHAT: Squad Radio
+	DESCRIPTION: Allows the user to speak to their squad.
+]]--
+
+ix.chat.Register("squadradio", { -- Sets up and registers the radio chat.
+	format = "[%s] %s: \"%s\"",
+	indicator = "chatTalking",
+	description = "Talk over your squad net.",
+	CanHear = function(self, speaker, listener)
+    	local canHear = false
+
+    	local listenSquadInfo = listener:GetCharacter():GetData("squadInfo")
+    	local speakSquadInfo = speaker:GetCharacter():GetData("squadInfo")
+
+    	if ( listenSquadInfo != nil and speakSquadInfo != nil and ix.util.StringMatches(listenSquadInfo.squad, speakSquadInfo.squad) ) then
+    		canHear = true
+    	end
+
+		return canHear
+	end,
+	CanSay = function(self, speaker, text)
+		local squadInfo = speaker:GetCharacter():GetData("squadInfo")
+		local squad = squadInfo["squad"]
+		local canSpeak = false
+
+		if (squadInfo) and (ix.squadsystem.squads[squad]) then -- If the speaker has RadioInfo set up, they have a radio and can speak.
+			canSpeak = true
+		end
+
+		return canSpeak
+	end,
+	OnChatAdd = function(self, speaker, text, anonymous, info)
+		local character = speaker:GetCharacter()
+		local name = character:GetName()
+		local color = info.color
+		local icon = info.icon
+		local squad = info.squad
+
+		if ( icon != "lead" and icon != "tl" ) then
+			color = Color(color.r + 50, color.g + 50, color.b + 50)
+		end
+		
+		if (speaker != LocalPlayer()) then
+	        surface.PlaySound( "npc/metropolice/vo/off" .. math.random(1, 3) .. ".wav" )
+	    end
+
+		chat.AddText(color, string.format(self.format, string.upper(squad), name, text))
+	end
+})
+
+--[[
+	COMMAND: /s
+	DESCRIPTION: Broadcasts a message over the equipped radio's primary frequency.
+]]--
+
+ix.command.Add("s", {
+	description = "Radio over your squad net.",
+	superAdminOnly = false,
+	arguments = {
+		ix.type.text
+	},
+	OnRun = function(self, client, text)
+		local char = client:GetCharacter()
+		local squadInfo = char:GetData("squadInfo")
+		local squad = squadInfo["squad"]
+
+		if (squadInfo) and (ix.squadsystem.squads[squad]) then -- If the speaker has RadioInfo set up, they have a radio and can speak.
+			client:EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", math.random(50, 60), math.random(80, 120))
+
+			ix.chat.Send(client, "squadradio", text, false, nil, { color = squadInfo["color"], icon = squadInfo["icon"], squad = squadInfo["squad"] })
+		end
+	end
+})
+
+ix.command.Add("squad", {
+	description = "Radio over your squad net.",
+	superAdminOnly = false,
+	arguments = {
+		ix.type.text
+	},
+	OnRun = function(self, client, text)
+		local char = client:GetCharacter()
+		local squadInfo = char:GetData("squadInfo")
+		local squad = squadInfo["squad"]
+
+		if (squadInfo) and (ix.squadsystem.squads[squad]) then -- If the speaker has RadioInfo set up, they have a radio and can speak.
+			client:EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", math.random(50, 60), math.random(80, 120))
+
+			ix.chat.Send(client, "squadradio", text, false, nil, { color = squadInfo["color"], icon = squadInfo["icon"], squad = squadInfo["squad"] })
+		end
+	end
+})

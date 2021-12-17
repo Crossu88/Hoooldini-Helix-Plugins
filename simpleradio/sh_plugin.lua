@@ -26,6 +26,7 @@ local RADIO_CHATCOLOR = Color(100, 255, 50)
 
 ix.chat.Register("radio", { -- Sets up and registers the radio chat.
 	format = "[%s] %s: \"%s\"",
+	indicator = "chatTalking",
 	CanHear = function(self, speaker, listener)
 		local canHear = false
         local speakerRadio = speaker:GetCharacter():GetData("RadioInfo")

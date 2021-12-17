@@ -1,0 +1,5 @@
+BACKGROUND.name = "Career Soldier"
+BACKGROUND.description = "To you, service meant more than the benefits the military provided. It was a path to becoming a part of something unequivocally larger than yourself. \n\nWhen you entered into military service, it was what gave you drive an purpose in your life. So you decided to make the most of what the service gave you and turned it into a career. You didn't just want the military to become your job, you wanted it to be your reason for being.\n\nYou remained in military service ever since. And, after performing admirably, your merits were observed by a greater entity than the one you served. Thereafter, you became a representative of your parent nation as a member of IFOCOM's military arm."
+BACKGROUND.icon = "ui/icons/fn-fal.png"
+BACKGROUND.traits = {
+}
